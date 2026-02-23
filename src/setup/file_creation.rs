@@ -5,7 +5,7 @@ use std::path::Path
 
 fn run()
 {
-    let config_path = Path::new("/etc/ConsenSys");
+    let config_path = Path::new("/etc/serverus");
     if !config_path.exists() 
     {
         fs::create_dir_all(path)?;
@@ -13,7 +13,7 @@ fn run()
     }
 
 
-    let runfiles_path = Path::new("/var/lib/ConsenSys");
+    let runfiles_path = Path::new("/var/lib/serverus");
     if !runfiles_path.exists()
     {
         fs::create_dir_all(path)?;
