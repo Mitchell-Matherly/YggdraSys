@@ -2,7 +2,7 @@ use super::check_exists;
 use super::make_conf;
 
 
-pub fn run()
+pub fn init()
 {
     check_exists::run();
     println!("wireguard check run.");

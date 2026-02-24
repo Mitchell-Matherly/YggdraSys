@@ -13,14 +13,14 @@ pub fn run() -> io::Result<()>
 {
  
     let confpath = Path::new("/etc/wireguard/wg0.conf");
-    let bakpath = Path::new("/etc/wireguard/bak.wgo.conf");
+    let bakpath = Path::new("/etc/wireguard/bak.wg0.conf");
 
 
 
     if confpath.exists() == true 
     {
         fs::rename(confpath, bakpath)?;
-        println!("moved existing wg0 to bak.wgo.conf");
+        println!("moved existing wg0 to bak.wg0.conf");
     }
 
     let mut confile = File::create(confpath)?;
@@ -59,9 +59,12 @@ pub fn run() -> io::Result<()>
     r#"[Interface]
     Address = 10.0.0.1/24
     ListenPort = 51820
+    #DO NOT SHARE YOUR PRIVATE KEY
     PrivateKey = {}
-
+    
     #PublicKey (share this) = {}
+   
+
     "#,
         private_key, public_key
     );
