@@ -78,8 +78,8 @@ fn make_config(config_path: &Path) -> io::Result<()>
     
     let config = Config {
         system: System {
-            name: "node-42".to_string(),
-            role: "branch".to_string(),
+            name: format!("node-{}",name_gen),
+            role: "root".to_string(),
             setup_complete: "no".to_string()
         },
         network: Network {
