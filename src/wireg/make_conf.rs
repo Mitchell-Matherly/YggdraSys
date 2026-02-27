@@ -35,7 +35,7 @@ pub fn run() -> io::Result<()>
         .expect("Failed to parse key")
         .trim()
         .to_string();
-    println!("Private Key: {}", private_key);
+    println!("Private Key generated! stored in wg0.");
 
     let mut pubkey_process = Command::new("wg")
         .arg("pubkey")

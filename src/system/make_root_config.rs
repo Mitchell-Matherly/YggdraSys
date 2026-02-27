@@ -1,5 +1,5 @@
-//creates the basic file structures for ConsenSys to run. Config files in /etc/ConsenSys, and
-//state/identity files in /var/lib/ConsenSys
+//creates the basic file structures for ConsenSys to run. Config files in /etc/Ratatoskr, and
+//state/identity files in /var/lib/Ratatoskr
 
 use toml;
 use serde::Serialize;
@@ -15,17 +15,18 @@ use std::fs::File;
 
 
 #[derive(Serialize)]
-struct Config { system: System, network: Network }
+struct Config { system: System, network: Network }      //defines the structure for the Config file,
+                                                        //composed of System and Netowkr parts.
     
 #[derive(Serialize)]
-struct System { 
+struct System {                                         //System section in config files
     name: String, 
     role: String, 
     setup_complete: String 
     }
     
 #[derive(Serialize)] 
-struct Network {
+struct Network {                                        //Network section in config files
     interface_name: String, 
     maximum_hosts: u16, 
     ip_addr: String, 
@@ -36,9 +37,9 @@ struct Network {
 pub fn make_root_config()
 {
 
-    let args: Vec<String> = env::args().collect();
-    let config_path = Path::new("/etc/ConsenSys");
-    if !config_path.exists() 
+    let args: Vec<String> = env::args().collect();      
+    let config_path = Path::new("/etc/Ratatoskr");      
+    if !config_path.exists()                            //checks for an existing "/etc/Ratatoskr"
     {
         println!("no config files exist... creating.");
        
@@ -46,15 +47,15 @@ pub fn make_root_config()
     }
 
 
-    let runfiles_path = Path::new("/var/lib/ConsenSys");
-    if !runfiles_path.exists()
+    let runfiles_path = Path::new("/var/lib/Ratatoskr");
+    if !runfiles_path.exists()                          //checks for existing "/var/lib/Ratatoskr"
     {
         make_runfiles(runfiles_path);
 
     }
 
 
-    else { println!("auto config already completed. It's dangerous to run this again, so you'll have to go in manually. Otherwise, you could try deleting and reinstalling from stratch with consys init ragnarok."); }
+    else { println!("auto config already completed. It's dangerous to run this again, so you'll have to go in manually. Otherwise, you could try deleting and reinstalling from stratch with ratskr init ragnarok."); }
 
 //finish setting up file structure
 
@@ -117,10 +118,17 @@ fn make_runfiles(runfiles_path: &Path) -> io::Result<()>
 
     }
     
-    let activeprocesses = basepath.join("active.json");
+    let activeprocesses = basepath.join("active.toml");
     if !activeprocesses.exists()
     {
         println!("don't got no activeprocess");
+
+    }
+    
+    let activeprocesses = basepath.join("pubkey.json");
+    if !activeprocesses.exists()
+    {
+        println!("don't got no pubkey");
 
     }
     
