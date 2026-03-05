@@ -4,9 +4,9 @@
 
 mod wireg;
 mod system;
+mod file_structs;
 
 use std::env;
-use std::process;
 use clap::{Arg, Command};
 
 fn main() 

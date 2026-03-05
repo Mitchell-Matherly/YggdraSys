@@ -1,56 +1,50 @@
-//creates the basic file structures for ConsenSys to run. Config files in /etc/Ratatoskr, and
-//state/identity files in /var/lib/Ratatoskr
+//creates the basic file structures for Yggdrasys to run. Config files in /etc/Yggdrasys, and
+//state/identity files in /var/lib/Yggdrasys
 
 use toml;
-use serde::Serialize;
-use serde::Deserialize;
 use rand::RngExt;
 use std::io;
 use std::path::Path;
 use std::env;
-use std::env::args;
 use std::fs;
-use std::fs::File;
+
+use crate::file_structs::{
+    config::Config,
+    config::System,
+    config::Network,
+    activeprocesses::ActiveProcesses,
+    identity::Identity,
+    known_hosts::Host,
+    known_hosts::HostDb
+};
 
 
-
-#[derive(Serialize)]
-struct Config { system: System, network: Network }      //defines the structure for the Config file,
-                                                        //composed of System and Netowkr parts.
-    
-#[derive(Serialize)]
-struct System {                                         //System section in config files
-    name: String, 
-    role: String, 
-    setup_complete: String 
-    }
-    
-#[derive(Serialize)] 
-struct Network {                                        //Network section in config files
-    interface_name: String, 
-    maximum_hosts: u16, 
-    ip_addr: String, 
-    public_key: String 
-    }
 
 
 pub fn make_root_config()
 {
 
-    let args: Vec<String> = env::args().collect();      
-    let config_path = Path::new("/etc/Ratatoskr");      
-    if !config_path.exists()                            //checks for an existing "/etc/Ratatoskr"
+    let args: Vec<String> = env::args().collect();
+    
+    let mut rng = rand::rng();
+    let n: u16 = rng.random_range(1..=999);
+    let name_gen = format!("root-{}", n);               //generate a temporary random name for the
+                                                        //host, to be used if files are not found.
+    
+
+    let config_path = Path::new("/etc/Yggdrasys");      
+    if !config_path.exists()                            //checks for an existing "/etc/Yggdrasys"
     {
         println!("no config files exist... creating.");
        
-        make_config(config_path);
+        make_config(config_path, name_gen.clone());
     }
 
 
-    let runfiles_path = Path::new("/var/lib/Ratatoskr");
-    if !runfiles_path.exists()                          //checks for existing "/var/lib/Ratatoskr"
+    let runfiles_path = Path::new("/var/lib/Yggdrasys");
+    if !runfiles_path.exists()                          //checks for existing "/var/lib/Yggdrasys"
     {
-        make_runfiles(runfiles_path);
+        make_runfiles(runfiles_path, name_gen.clone());
 
     }
 
@@ -61,7 +55,7 @@ pub fn make_root_config()
 
 }
 
-fn make_config(config_path: &Path) -> io::Result<()> 
+fn make_config(config_path: &Path, name_gen: String) -> io::Result<()> 
 { 
     fs::create_dir_all(config_path)?;
     println!("Created config directory at {}", config_path.display());
@@ -70,16 +64,13 @@ fn make_config(config_path: &Path) -> io::Result<()>
     
 
     
-    let mut rng = rand::rng();
-    let n: u16 = rng.random_range(1..=999);
-    let name_gen = format!("node {}", n);
 
     println!("this device is {}", name_gen);
     
     
     let config = Config {
         system: System {
-            name: format!("node-{}",name_gen),
+            name: format!("{}",name_gen),
             role: "root".to_string(),
             setup_complete: "no".to_string()
         },
@@ -92,7 +83,7 @@ fn make_config(config_path: &Path) -> io::Result<()>
     };
 
     let tomlized_config_file = toml::to_string_pretty(&config)
-        .expect("failed to TOMLize");
+        .expect("failed to TOMLize config.toml");
 
     fs::write(config_file_main, tomlized_config_file)?;
 
@@ -102,22 +93,30 @@ fn make_config(config_path: &Path) -> io::Result<()>
     Ok(())
 }
 
-fn make_runfiles(runfiles_path: &Path) -> io::Result<()>
+fn make_runfiles(runfiles_path: &Path, name_gen: String) -> io::Result<()>
 {
 
     fs::create_dir_all(runfiles_path);
     println!("Created runtime directory at {}", runfiles_path.display());
 
     
-    let basepath = Path::new("/var/lib/ConsenSys");
+    let basepath = Path::new("/var/lib/Yggdrasys");
 
-    let identity = basepath.join("identity.toml");
-    if !identity.exists()
+    let identity_path = basepath.join("identity.toml");
+    if !identity_path.exists()
     {
-        println!("don't got no identity");
+        let identity = Identity {
+            name: format!("{}", name_gen),
+        };
 
-    }
+        let tomlized_identity_file = toml::to_string_pretty(&identity)
+            .expect("Failed to TOMLize identity.toml");
     
+        fs::write(identity_path, tomlized_identity_file)?;
+
+        println!("Identity.toml created");
+
+    } 
     let activeprocesses = basepath.join("active.toml");
     if !activeprocesses.exists()
     {
@@ -125,7 +124,7 @@ fn make_runfiles(runfiles_path: &Path) -> io::Result<()>
 
     }
     
-    let activeprocesses = basepath.join("pubkey.json");
+    let pubkey = basepath.join("pubkey.json");
     if !activeprocesses.exists()
     {
         println!("don't got no pubkey");

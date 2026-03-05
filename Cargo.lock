@@ -131,17 +131,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
-name = "consys"
-version = "0.1.0"
-dependencies = [
- "clap",
- "fs",
- "rand",
- "serde",
- "toml",
-]
-
-[[package]]
 name = "cpufeatures"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -651,6 +640,17 @@ dependencies = [
  "serde_json",
  "unicode-xid",
  "wasmparser",
+]
+
+[[package]]
+name = "yggsys"
+version = "0.1.2"
+dependencies = [
+ "clap",
+ "fs",
+ "rand",
+ "serde",
+ "toml",
 ]
 
 [[package]]

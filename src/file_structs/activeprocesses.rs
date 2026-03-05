@@ -1,16 +1,13 @@
 use serde::Serialize;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
-use toml;
 
 
 
 #[derive(Serialize)]
-pub struct active_processes {
+pub struct ActiveProcesses {
     pub processes: Vec<Process>,
 }
 
+#[derive(Serialize)]
 pub struct Process {
     pub name: String,
     pub status: String,
